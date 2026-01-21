@@ -1,0 +1,8 @@
+{
+  "installCommand": "echo 'Flutter project - build instala o SDK'",
+  "buildCommand": "bash scripts/vercel-build.sh",
+  "outputDirectory": "build/web",
+  "rewrites": [
+    { "source": "/((?!assets|icons|favicon|manifest|main\\.dart|flutter|version|canvaskit).*)", "destination": "/index.html" }
+  ]
+}
