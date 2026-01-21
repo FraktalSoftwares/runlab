@@ -18,6 +18,8 @@ echo ">>> 3/5 Resolvendo dependências..."
 flutter pub get
 
 echo ">>> 4/5 Build web (SUPABASE_* vêm das env da Vercel)..."
+# .env está no pubspec mas não no repo (gitignore); criar vazio para o asset existir no build.
+touch .env
 flutter build web \
   --dart-define=SUPABASE_URL="${SUPABASE_URL:-}" \
   --dart-define=SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY:-}"
