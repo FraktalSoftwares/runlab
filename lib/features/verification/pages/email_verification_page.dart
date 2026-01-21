@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/widgets.dart';
 
 /// Tela de Verificação de Email
@@ -238,12 +237,8 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                 child: Stack(
                   children: [
                     if (_isCodeComplete())
-                      Positioned(
-                        left: 0,
-                        top: 0,
+                      Positioned.fill(
                         child: Container(
-                          width: double.infinity,
-                          height: 48,
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.02),
                           ),
@@ -255,14 +250,11 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                         onTap: _isCodeComplete()
                             ? () {
                                 // TODO: Validar código e navegar
-                                context.go('/');
+                                context.go('/onboarding/boas-vindas');
                               }
                             : null,
                         borderRadius: BorderRadius.circular(999),
-                        child: Container(
-                          width: double.infinity,
-                          height: 48,
-                          alignment: Alignment.center,
+                        child: Center(
                           child: Text(
                             'Continuar',
                             style: TextStyle(

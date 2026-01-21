@@ -1,35 +1,88 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/models/auth_state.dart' as app_auth;
+import '../../../core/providers/auth_provider.dart';
 import '../../../shared/widgets/widgets.dart';
 
 /// Tela de Login
 ///
 /// Baseada no design do Figma (node-id: 58-5075)
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   // Controllers
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   // Estados
   bool _obscurePassword = true;
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_onFormChanged);
+    _passwordController.addListener(_onFormChanged);
+  }
 
   @override
   void dispose() {
+    _emailController.removeListener(_onFormChanged);
+    _passwordController.removeListener(_onFormChanged);
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _onFormChanged() {
+    setState(() {});
+  }
+
+  Future<void> _handleSignIn() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final authNotifier = ref.read(authNotifierProvider.notifier);
+      
+      await authNotifier.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      final authState = ref.read(authNotifierProvider);
+      
+      if (authState is app_auth.AuthAuthenticated) {
+        // Navegar para tela de confirmação de login
+        if (mounted) {
+          context.push('/login/confirmation');
+        }
+      } else if (authState is app_auth.AuthError) {
+        setState(() {
+          _errorMessage = authState.message;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Erro ao fazer login. Tente novamente.';
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -127,32 +180,76 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
+              // Mensagem de erro
+              if (_errorMessage != null) ...[
+                SizedBox(height: AppSpacing.md),
+                Container(
+                  padding: EdgeInsets.all(AppSpacing.md),
+                  decoration: BoxDecoration(
+                        color: AppColors.error.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        color: AppColors.error,
+                        size: 20,
+                      ),
+                      SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: Text(
+                          _errorMessage!,
+                          style: TextStyle(
+                            color: AppColors.error,
+                            fontSize: AppTypography.bodySmall,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               SizedBox(height: AppSpacing.xl),
               // Botão Continuar
               SizedBox(
                 width: double.infinity,
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Navegar para tela de confirmação de login
-                    context.push('/login/confirmation');
-                  },
+                  onPressed: (_emailController.text.isNotEmpty &&
+                          _passwordController.text.isNotEmpty &&
+                          !_isLoading)
+                      ? _handleSignIn
+                      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.lime500,
                     foregroundColor: AppColors.neutral800,
+                    disabledBackgroundColor: AppColors.neutral750,
+                    disabledForegroundColor: AppColors.neutral500,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(999),
                     ),
                     elevation: 0,
                   ),
-                  child: Text(
-                    'Continuar',
-                    style: TextStyle(
-                      fontSize: AppTypography.bodyLarge,
-                      fontWeight: AppTypography.medium,
-                      height: 1.5,
-                    ),
-                  ),
+                  child: _isLoading
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.neutral800,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          'Continuar',
+                          style: TextStyle(
+                            fontSize: AppTypography.bodyLarge,
+                            fontWeight: AppTypography.medium,
+                            height: 1.5,
+                          ),
+                        ),
                 ),
               ),
               SizedBox(height: AppSpacing.lg),

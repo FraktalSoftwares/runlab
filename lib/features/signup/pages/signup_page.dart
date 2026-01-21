@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/models/auth_state.dart' as app_auth;
+import '../../../core/providers/auth_provider.dart';
 import '../../../shared/widgets/widgets.dart';
 
 /// Tela de Cadastro
 ///
 /// Baseada no design do Figma (node-id: 58:4960)
-class SignupPage extends StatefulWidget {
+class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  ConsumerState<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignupPageState extends ConsumerState<SignupPage> {
   // Controllers
   final _nameController = TextEditingController();
   final _birthDateController = TextEditingController();
@@ -31,6 +34,8 @@ class _SignupPageState extends State<SignupPage> {
   bool _termsAccepted = false;
   bool _dataUsageAccepted = false;
   String? _selectedGender;
+  bool _isLoading = false;
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -41,6 +46,85 @@ class _SignupPageState extends State<SignupPage> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  bool _isFormValid() {
+    return _nameController.text.isNotEmpty &&
+        _emailController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty &&
+        _confirmPasswordController.text.isNotEmpty &&
+        _passwordController.text == _confirmPasswordController.text &&
+        _passwordController.text.length >= 6 &&
+        _isValidEmail(_emailController.text);
+  }
+
+  bool _isValidEmail(String email) {
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+  }
+
+  Future<void> _handleSignUp() async {
+    if (!_isFormValid()) {
+      setState(() {
+        if (_passwordController.text != _confirmPasswordController.text) {
+          _errorMessage = 'As senhas não coincidem';
+        } else if (_passwordController.text.length < 6) {
+          _errorMessage = 'A senha deve ter pelo menos 6 caracteres';
+        } else if (!_isValidEmail(_emailController.text)) {
+          _errorMessage = 'Email inválido';
+        } else {
+          _errorMessage = 'Preencha todos os campos';
+        }
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final authNotifier = ref.read(authNotifierProvider.notifier);
+      
+      await authNotifier.signUp(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        fullName: _nameController.text.trim(),
+        birthDate: _birthDateController.text.isNotEmpty
+            ? _birthDateController.text
+            : null,
+        gender: _selectedGender,
+      );
+
+      final authState = ref.read(authNotifierProvider);
+      
+      if (authState is app_auth.AuthAuthenticated) {
+        // Usuário autenticado, navegar para home ou verificação
+        if (mounted) {
+          context.push('/verification/email');
+        }
+      } else if (authState is app_auth.AuthError) {
+        setState(() {
+          _errorMessage = authState.message;
+          _isLoading = false;
+        });
+      } else {
+        // Usuário criado mas não autenticado (precisa confirmar email)
+        // Navegar para tela de verificação mesmo assim
+        if (mounted) {
+          context.push('/verification/email');
+        }
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Erro ao criar conta: ${e.toString()}';
+        _isLoading = false;
+      });
+      print('Erro no signup: $e');
+    }
   }
 
   Widget _buildGenderDropdown() {
@@ -289,17 +373,44 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ),
                   ),
+                  // Mensagem de erro
+                  if (_errorMessage != null) ...[
+                    Container(
+                      padding: EdgeInsets.all(AppSpacing.md),
+                      decoration: BoxDecoration(
+                        color: AppColors.error.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            color: AppColors.error,
+                            size: 20,
+                          ),
+                          SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: Text(
+                              _errorMessage!,
+                              style: TextStyle(
+                                color: AppColors.error,
+                                fontSize: AppTypography.bodySmall,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: AppSpacing.md),
+                  ],
                   SizedBox(height: AppSpacing.xl),
                   // Botão Criar conta
                   SizedBox(
                     width: double.infinity,
                     height: 48,
                     child: ElevatedButton(
-                      onPressed: _termsAccepted && _dataUsageAccepted
-                          ? () {
-                              // Navegar para tela de verificação de email
-                              context.push('/verification/email');
-                            }
+                      onPressed: (_termsAccepted && _dataUsageAccepted && !_isLoading)
+                          ? _handleSignUp
                           : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.lime500,
@@ -311,14 +422,25 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                         elevation: 0,
                       ),
-                      child: Text(
-                        'Criar conta',
-                        style: TextStyle(
-                          fontSize: AppTypography.bodyLarge,
-                          fontWeight: AppTypography.medium,
-                          height: 1.5,
-                        ),
-                      ),
+                      child: _isLoading
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.neutral800,
+                                ),
+                              ),
+                            )
+                          : Text(
+                              'Criar conta',
+                              style: TextStyle(
+                                fontSize: AppTypography.bodyLarge,
+                                fontWeight: AppTypography.medium,
+                                height: 1.5,
+                              ),
+                            ),
                     ),
                   ),
                   SizedBox(height: AppSpacing.xl),

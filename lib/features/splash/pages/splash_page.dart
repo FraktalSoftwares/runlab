@@ -1,25 +1,33 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../core/models/auth_state.dart' as app_auth;
 import '../../../core/theme/app_colors.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../../shared/widgets/widgets.dart';
 
 /// Splash Screen
-/// 
+///
 /// Baseada no design do Figma (node-id: 163:5025)
-/// Exibe o splash e navega automaticamente para o onboarding após carregar
-class SplashPage extends StatefulWidget {
+/// Exibe o splash e navega para home (se logado) ou onboarding (se não) após auth pronto.
+class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
+  ConsumerState<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> {
+class _SplashPageState extends ConsumerState<SplashPage> {
+  bool _hasNavigated = false;
+  Timer? _timeoutTimer;
+
   @override
   void initState() {
     super.initState();
-    // Configurar status bar para light content (texto branco)
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -27,32 +35,52 @@ class _SplashPageState extends State<SplashPage> {
         statusBarBrightness: Brightness.dark,
       ),
     );
-    
-    // Navegar para onboarding após 2 segundos (tempo de exibição do splash)
-    _navigateToOnboarding();
+
+    _timeoutTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted &&
+          !_hasNavigated &&
+          ref.read(authNotifierProvider) is app_auth.AuthInitial) {
+        _hasNavigated = true;
+        context.go('/onboarding');
+      }
+    });
   }
 
-  Future<void> _navigateToOnboarding() async {
-    // Aguardar 2 segundos para exibir o splash
-    await Future.delayed(const Duration(seconds: 2));
-    
-    // Verificar se o widget ainda está montado antes de navegar
-    if (mounted) {
+  @override
+  void dispose() {
+    _timeoutTimer?.cancel();
+    super.dispose();
+  }
+
+  void _navigateIfReady(app_auth.AppAuthState auth) {
+    if (_hasNavigated || !mounted) return;
+    if (auth is app_auth.AuthInitial) return;
+
+    _hasNavigated = true;
+    if (auth is app_auth.AuthAuthenticated) {
+      context.go('/');
+    } else {
       context.go('/onboarding');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<app_auth.AppAuthState>(authNotifierProvider, (prev, next) {
+      if (next is! app_auth.AuthInitial) _navigateIfReady(next);
+    });
+
+    final auth = ref.watch(authNotifierProvider);
+    if (auth is! app_auth.AuthInitial) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _navigateIfReady(auth));
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Stack(
           children: [
-            // Logo centralizado
-            Center(
-              child: _buildLogo(),
-            ),
+            Center(child: _buildLogo()),
           ],
         ),
       ),
