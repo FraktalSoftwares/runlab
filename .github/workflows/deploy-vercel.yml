@@ -1,0 +1,47 @@
+# Alternativa ao build na Vercel: build no GitHub Actions e deploy via CLI.
+#
+# Secrets necessários (Settings → Secrets and variables → Actions):
+#   VERCEL_TOKEN     - Token em vercel.com/account/tokens
+#   SUPABASE_URL     - URL do Supabase
+#   SUPABASE_ANON_KEY - Chave anônima do Supabase
+#   VERCEL_ORG_ID    - Id do time/org (em .vercel/ ou no dashboard)
+#   VERCEL_PROJECT_ID - Id do projeto (em .vercel/project.json ou no dashboard)
+#
+# Opcional: na Vercel, desative "Deploy on push" para não rodar o build lá.
+
+name: Build e deploy (Vercel)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.24.5"
+          channel: "stable"
+          cache: true
+
+      - name: Resolver dependências
+        run: flutter pub get
+
+      - name: Build web
+        run: |
+          flutter build web \
+            --dart-define=SUPABASE_URL="${{ secrets.SUPABASE_URL }}" \
+            --dart-define=SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}"
+
+      - name: Inserir rewrites SPA em build/web
+        run: cp vercel-static.json build/web/vercel.json
+
+      - name: Deploy na Vercel
+        run: npx vercel@latest deploy build/web --prod --token "${{ secrets.VERCEL_TOKEN }}" --yes
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
