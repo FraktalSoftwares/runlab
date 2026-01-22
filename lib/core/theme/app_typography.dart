@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 /// - Espaçamento entre letras
 class AppTypography {
   // Família de fontes
-  // TODO: Extrair do Figma e adicionar fontes ao pubspec.yaml
-  static const String fontFamily = 'Roboto';
+  // TODO: Adicionar fontes ao pubspec.yaml
+  static const String fontFamily = 'FranklinGothic URW';
 
   // Tamanhos de fonte
   // TODO: Extrair valores exatos do Figma

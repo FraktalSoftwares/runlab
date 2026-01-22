@@ -2,6 +2,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../app/pages/bootstrap_page.dart';
 import '../app/pages/ui_kit_page.dart';
+import '../../features/competitions/pages/competitions_page.dart';
+import '../../features/competitions/pages/competition_detail_page.dart';
+import '../../features/competitions/pages/competition_registration_page.dart';
+import '../../features/competitions/pages/competition_ranking_page.dart';
+import '../../features/runs/pages/run_countdown_page.dart';
+import '../../features/runs/pages/run_start_page.dart';
+import '../../features/runs/pages/run_active_page.dart';
+import '../../features/runs/pages/run_paused_page.dart';
 import '../../features/authentication/pages/authentication_page.dart';
 import '../../features/splash/pages/splash_page.dart';
 import '../../features/onboarding/pages/onboarding_page.dart';
@@ -100,6 +108,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     routes: [
     GoRoute(
       path: '/',
+      name: 'competitions',
+      builder: (context, state) => const CompetitionsPage(),
+    ),
+    GoRoute(
+      path: '/bootstrap',
       name: 'bootstrap',
       builder: (context, state) => const BootstrapPage(),
     ),
@@ -182,6 +195,62 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       path: '/ui-kit',
       name: 'ui-kit',
       builder: (context, state) => const UIKitPage(),
+    ),
+    GoRoute(
+      path: '/competitions/:id',
+      name: 'competition-detail',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return CompetitionDetailPage(competitionId: id);
+      },
+    ),
+    GoRoute(
+      path: '/competitions/:id/register',
+      name: 'competition-registration',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return CompetitionRegistrationPage(competitionId: id);
+      },
+    ),
+    GoRoute(
+      path: '/competitions/:id/ranking',
+      name: 'competition-ranking',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return CompetitionRankingPage(competitionId: id);
+      },
+    ),
+    GoRoute(
+      path: '/runs/:runId/countdown',
+      name: 'run-countdown',
+      builder: (context, state) {
+        final runId = state.pathParameters['runId']!;
+        return RunCountdownPage(runId: runId);
+      },
+    ),
+    GoRoute(
+      path: '/runs/:runId/start',
+      name: 'run-start',
+      builder: (context, state) {
+        final runId = state.pathParameters['runId']!;
+        return RunStartPage(runId: runId);
+      },
+    ),
+    GoRoute(
+      path: '/runs/:runId/active',
+      name: 'run-active',
+      builder: (context, state) {
+        final runId = state.pathParameters['runId']!;
+        return RunActivePage(runId: runId);
+      },
+    ),
+    GoRoute(
+      path: '/runs/:runId/paused',
+      name: 'run-paused',
+      builder: (context, state) {
+        final runId = state.pathParameters['runId']!;
+        return RunPausedPage(runId: runId);
+      },
     ),
     ],
   );

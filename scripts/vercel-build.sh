@@ -18,11 +18,21 @@ echo ">>> 3/5 Resolvendo dependências..."
 flutter pub get
 
 echo ">>> 4/5 Build web (SUPABASE_* vêm das env da Vercel)..."
+if [ -z "${SUPABASE_URL:-}" ]; then
+  echo ">>> ERRO: SUPABASE_URL não está definida nas variáveis de ambiente da Vercel."
+  echo ">>> Em Settings → Environment Variables, crie SUPABASE_URL (ex.: https://xxx.supabase.co)"
+  exit 1
+fi
+if [ -z "${SUPABASE_ANON_KEY:-}" ]; then
+  echo ">>> ERRO: SUPABASE_ANON_KEY não está definida nas variáveis de ambiente da Vercel."
+  echo ">>> Em Settings → Environment Variables, crie SUPABASE_ANON_KEY (chave anon do Supabase)"
+  exit 1
+fi
 # .env está no pubspec mas não no repo (gitignore); criar vazio para o asset existir no build.
 touch .env
 flutter build web \
-  --dart-define=SUPABASE_URL="${SUPABASE_URL:-}" \
-  --dart-define=SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY:-}"
+  --dart-define=SUPABASE_URL="$SUPABASE_URL" \
+  --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY"
 
 echo ">>> 5/5 Build concluído. Saída: build/web"
 ls -la build/web/ | head -20

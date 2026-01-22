@@ -1,11 +1,23 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import '../core/config/supabase_config.dart';
 import 'app.dart';
 
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Inicializar dados de locale para formatação de datas (necessário para web)
+  try {
+    await initializeDateFormatting('pt_BR', null);
+  } catch (e) {
+    if (kDebugMode) {
+      // ignore: avoid_print
+      print('[RunLab] Aviso: Não foi possível inicializar locale pt_BR: $e');
+    }
+    // Continua mesmo se falhar, usará locale padrão
+  }
 
   try {
     await SupabaseConfig.initialize();
@@ -80,6 +92,16 @@ class _BootstrapErrorScreen extends StatelessWidget {
                   'são passadas ao build via --dart-define.',
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
+                if (message.contains('minified') || message.contains('Instance of'))
+                  const Padding(
+                    padding: EdgeInsets.only(top: 12),
+                    child: Text(
+                      'Erros com "Instance of \'minified:...\'" vêm de bibliotecas. '
+                      'Confira se a URL (https://xxx.supabase.co) e a chave anon do '
+                      'Supabase estão corretas em Settings → Environment Variables.',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ),
               ],
             ),
           ),

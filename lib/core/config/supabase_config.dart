@@ -24,10 +24,16 @@ class SupabaseConfig {
       );
     }
 
-    await Supabase.initialize(
-      url: supabaseUrl,
-      anonKey: supabaseAnonKey,
-    );
+    try {
+      await Supabase.initialize(
+        url: supabaseUrl,
+        anonKey: supabaseAnonKey,
+      );
+    } catch (e) {
+      throw Exception(
+        'Falha ao inicializar Supabase (URL ou chave podem estar incorretas): $e',
+      );
+    }
   }
 
   static SupabaseClient get client => Supabase.instance.client;
