@@ -28,14 +28,14 @@ class RunPausedPage extends ConsumerWidget {
   }
 
   String _formatDistance(int meters) {
-    return '${(meters / 1000).toStringAsFixed(2)}';
+    return (meters / 1000).toStringAsFixed(2);
   }
 
   String? _formatPace(int? paceSecondsPerKm) {
     if (paceSecondsPerKm == null) return null;
     final minutes = paceSecondsPerKm ~/ 60;
     final seconds = paceSecondsPerKm % 60;
-    return '${minutes}:${seconds.toString().padLeft(2, '0')}km';
+    return '$minutes:${seconds.toString().padLeft(2, '0')}km';
   }
 
   @override

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/theme/app_colors.dart';
 
 /// Página de countdown (3-2-1) antes de iniciar a corrida
 class RunCountdownPage extends StatefulWidget {
