@@ -23,7 +23,6 @@ class _RunActivePageState extends ConsumerState<RunActivePage> {
   @override
   void initState() {
     super.initState();
-    // A permissão será solicitada automaticamente pelo LocationService quando o tracking iniciar
   }
 
   String _formatTime(int totalSeconds) {
@@ -63,117 +62,119 @@ class _RunActivePageState extends ConsumerState<RunActivePage> {
       body: SafeArea(
         child: Column(
           children: [
-            // Banner de swipe (pode ser fechado)
-            if (_showSwipeHint)
-              Container(
-                margin: const EdgeInsets.all(16),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: ShapeDecoration(
-                  color: AppColors.neutral750,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.swipe_right,
-                      color: AppColors.neutral300,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Deslize para direita para ver o mapa e o ranking da competição.',
-                        style: const TextStyle(
-                          color: AppColors.neutral200,
-                          fontSize: 14,
-                          fontFamily: 'FranklinGothic URW',
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _showSwipeHint = false;
-                        });
-                      },
-                      child: const Icon(
-                        Icons.close,
-                        color: AppColors.neutral400,
-                        size: 20,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-            // Métricas no topo
+            const SizedBox(height: 16),
+            
+            // Métricas no topo: Km percorridos (esquerda) e Pace (direita)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Km percorridos
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _formatDistance(trackingState.distanceMeters),
-                          style: const TextStyle(
-                            color: Color(0xFFCCF725), // Brand-lime-lime-500
-                            fontSize: 32,
-                            fontFamily: 'FranklinGothic URW',
-                            fontWeight: FontWeight.w600,
-                          ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _formatDistance(trackingState.distanceMeters),
+                        style: const TextStyle(
+                          color: Color(0xFFCCF725), // Brand-lime-lime-500
+                          fontSize: 32,
+                          fontFamily: 'FranklinGothic URW',
+                          fontWeight: FontWeight.w600,
                         ),
-                        const Text(
-                          'Km percorridos',
-                          style: TextStyle(
-                            color: AppColors.neutral400,
-                            fontSize: 14,
-                            fontFamily: 'FranklinGothic URW',
-                            fontWeight: FontWeight.w400,
-                          ),
+                      ),
+                      const Text(
+                        'Km percorridos',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontFamily: 'FranklinGothic URW',
+                          fontWeight: FontWeight.w400,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   // Pace
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          _formatPace(trackingState.currentPaceSecondsPerKm) ?? '--:--km',
-                          style: const TextStyle(
-                            color: Color(0xFFCCF725), // Brand-lime-lime-500
-                            fontSize: 32,
-                            fontFamily: 'FranklinGothic URW',
-                            fontWeight: FontWeight.w600,
-                          ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        _formatPace(trackingState.currentPaceSecondsPerKm) ?? '--:--km',
+                        style: const TextStyle(
+                          color: Color(0xFFCCF725), // Brand-lime-lime-500
+                          fontSize: 32,
+                          fontFamily: 'FranklinGothic URW',
+                          fontWeight: FontWeight.w600,
                         ),
-                        const Text(
-                          'Pace',
-                          style: TextStyle(
-                            color: AppColors.neutral400,
-                            fontSize: 14,
-                            fontFamily: 'FranklinGothic URW',
-                            fontWeight: FontWeight.w400,
-                          ),
+                      ),
+                      const Text(
+                        'Pace',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontFamily: 'FranklinGothic URW',
+                          fontWeight: FontWeight.w400,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
 
+            const SizedBox(height: 16),
+
+            // Banner de swipe (pode ser fechado)
+            if (_showSwipeHint)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: ShapeDecoration(
+                    color: AppColors.neutral750,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.swipe_right,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Deslize para direita para ver o mapa e o ranking da competição.',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontFamily: 'FranklinGothic URW',
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _showSwipeHint = false;
+                          });
+                        },
+                        child: const Icon(
+                          Icons.close,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
             const Spacer(),
 
-            // Timer grande no centro
+            // Cronômetro grande no centro
             Column(
               children: [
                 Text(
@@ -189,7 +190,7 @@ class _RunActivePageState extends ConsumerState<RunActivePage> {
                 const Text(
                   'Tempo total',
                   style: TextStyle(
-                    color: AppColors.neutral300,
+                    color: Colors.white,
                     fontSize: 16,
                     fontFamily: 'FranklinGothic URW',
                     fontWeight: FontWeight.w400,
@@ -200,12 +201,12 @@ class _RunActivePageState extends ConsumerState<RunActivePage> {
 
             const Spacer(),
 
-            // Botão Pausar
+            // Botão Pausar (verde com ícone de pause)
             GestureDetector(
               onTap: () async {
                 await trackingNotifier.pauseRun();
                 if (context.mounted) {
-                  context.push('/runs/${widget.runId}/paused');
+                  context.pushReplacement('/runs/${widget.runId}/paused');
                 }
               },
               child: Container(
@@ -232,7 +233,7 @@ class _RunActivePageState extends ConsumerState<RunActivePage> {
 
             const SizedBox(height: 24),
 
-            // Indicadores de página (para swipe futuro)
+            // Indicadores de página (pontos)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -241,6 +242,15 @@ class _RunActivePageState extends ConsumerState<RunActivePage> {
                   height: 8,
                   decoration: const BoxDecoration(
                     color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade700,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -266,7 +276,7 @@ class _RunActivePageState extends ConsumerState<RunActivePage> {
               child: const Text(
                 'Preciso de ajuda',
                 style: TextStyle(
-                  color: Color(0xFFCCF725), // Brand-lime-lime-500
+                  color: Colors.white,
                   fontSize: 14,
                   fontFamily: 'FranklinGothic URW',
                   fontWeight: FontWeight.w400,

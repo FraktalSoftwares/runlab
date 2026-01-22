@@ -32,10 +32,15 @@ INSERT INTO competition_distances (competition_id, label, meters, sort_order) VA
 ON CONFLICT DO NOTHING;
 
 -- Patrocinadores
+-- ⚠️ IMPORTANTE: URLs de logos devem estar hospedadas no Supabase Storage ou em um CDN que suporte CORS
+-- Exemplo de URL do Supabase Storage: 'https://{project-ref}.supabase.co/storage/v1/object/public/sponsor-logos/{nome}.png'
+-- Para desenvolvimento, você pode usar placeholders temporários ou fazer upload dos logos no Supabase Storage
 INSERT INTO competition_sponsors (competition_id, name, logo_url, sort_order) VALUES
-  ('00000000-0000-0000-0000-000000000001', 'Nike', 'https://logos-world.net/wp-content/uploads/2020/04/Nike-Logo.png', 1),
-  ('00000000-0000-0000-0000-000000000001', 'Gatorade', 'https://logos-world.net/wp-content/uploads/2020/11/Gatorade-Logo.png', 2),
-  ('00000000-0000-0000-0000-000000000001', 'Adidas', 'https://logos-world.net/wp-content/uploads/2020/04/Adidas-Logo.png', 3)
+  -- TODO: Substituir por URLs do Supabase Storage após fazer upload dos logos
+  -- Exemplo: 'https://lpxftanpwzfnuebjxfyc.supabase.co/storage/v1/object/public/sponsor-logos/nike.png'
+  ('00000000-0000-0000-0000-000000000001', 'Nike', NULL, 1),
+  ('00000000-0000-0000-0000-000000000001', 'Gatorade', NULL, 2),
+  ('00000000-0000-0000-0000-000000000001', 'Adidas', NULL, 3)
 ON CONFLICT DO NOTHING;
 
 -- Documentos
@@ -116,8 +121,9 @@ INSERT INTO competition_distances (competition_id, label, meters, sort_order) VA
 ON CONFLICT DO NOTHING;
 
 INSERT INTO competition_sponsors (competition_id, name, logo_url, sort_order) VALUES
-  ('00000000-0000-0000-0000-000000000002', 'Asics', 'https://logos-world.net/wp-content/uploads/2020/04/Asics-Logo.png', 1),
-  ('00000000-0000-0000-0000-000000000002', 'Powerade', 'https://logos-world.net/wp-content/uploads/2020/11/Powerade-Logo.png', 2)
+  -- TODO: Substituir por URLs do Supabase Storage após fazer upload dos logos
+  ('00000000-0000-0000-0000-000000000002', 'Asics', NULL, 1),
+  ('00000000-0000-0000-0000-000000000002', 'Powerade', NULL, 2)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO competition_documents (competition_id, title, file_url, sort_order) VALUES
@@ -170,7 +176,8 @@ INSERT INTO competition_distances (competition_id, label, meters, sort_order) VA
 ON CONFLICT DO NOTHING;
 
 INSERT INTO competition_sponsors (competition_id, name, logo_url, sort_order) VALUES
-  ('00000000-0000-0000-0000-000000000003', 'Puma', 'https://logos-world.net/wp-content/uploads/2020/04/Puma-Logo.png', 1)
+  -- TODO: Substituir por URLs do Supabase Storage após fazer upload dos logos
+  ('00000000-0000-0000-0000-000000000003', 'Puma', NULL, 1)
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -202,8 +209,9 @@ INSERT INTO competition_distances (competition_id, label, meters, sort_order) VA
 ON CONFLICT DO NOTHING;
 
 INSERT INTO competition_sponsors (competition_id, name, logo_url, sort_order) VALUES
-  ('00000000-0000-0000-0000-000000000004', 'New Balance', 'https://logos-world.net/wp-content/uploads/2020/04/New-Balance-Logo.png', 1),
-  ('00000000-0000-0000-0000-000000000004', 'Under Armour', 'https://logos-world.net/wp-content/uploads/2020/04/Under-Armour-Logo.png', 2)
+  -- TODO: Substituir por URLs do Supabase Storage após fazer upload dos logos
+  ('00000000-0000-0000-0000-000000000004', 'New Balance', NULL, 1),
+  ('00000000-0000-0000-0000-000000000004', 'Under Armour', NULL, 2)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO competition_documents (competition_id, title, file_url, sort_order) VALUES

@@ -18,54 +18,55 @@ class RunStartPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Spacer(),
-            const Spacer(),
-            // Botão Play
-            GestureDetector(
-              onTap: () async {
-                await trackingNotifier.startRun();
-                if (context.mounted) {
-                  context.pushReplacement('/runs/$runId/active');
-                }
-              },
-              child: Container(
-                width: 120,
-                height: 120,
-                decoration: ShapeDecoration(
-                  color: const Color(0xFFCCF725), // Brand-lime-lime-500-(base)
-                  shape: CircleBorder(
-                    side: BorderSide(
-                      width: 2,
-                      color: Colors.grey.shade800,
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Spacer(),
+              // Botão Play
+              GestureDetector(
+                onTap: () async {
+                  await trackingNotifier.startRun();
+                  if (context.mounted) {
+                    context.pushReplacement('/runs/$runId/active');
+                  }
+                },
+                child: Container(
+                  width: 120,
+                  height: 120,
+                  decoration: ShapeDecoration(
+                    color: const Color(0xFFCCF725), // Brand-lime-lime-500
+                    shape: CircleBorder(
+                      side: BorderSide(
+                        width: 2,
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.play_arrow,
+                      color: Colors.black,
+                      size: 60,
                     ),
                   ),
                 ),
-                child: const Center(
-                  child: Icon(
-                    Icons.play_arrow,
-                    color: Colors.black,
-                    size: 60,
-                  ),
+              ),
+              const SizedBox(height: 24),
+              // Texto
+              const Text(
+                'Inicie a corrida',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontFamily: 'FranklinGothic URW',
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            // Texto
-            const Text(
-              'Inicie a corrida',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontFamily: 'FranklinGothic URW',
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const Spacer(),
-          ],
+              const Spacer(),
+            ],
+          ),
         ),
       ),
     );

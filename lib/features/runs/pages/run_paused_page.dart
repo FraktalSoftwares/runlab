@@ -90,15 +90,14 @@ class RunPausedPage extends ConsumerWidget {
           child: Column(
             children: [
               const SizedBox(height: 16),
-              // Mapa placeholder (pode ser implementado depois)
+              
+              // Mapa placeholder
               Container(
                 height: 200,
                 margin: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: ShapeDecoration(
+                decoration: BoxDecoration(
                   color: AppColors.neutral800,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Center(
                   child: Text(
@@ -106,6 +105,8 @@ class RunPausedPage extends ConsumerWidget {
                     style: TextStyle(
                       color: AppColors.neutral400,
                       fontSize: 16,
+                      fontFamily: 'FranklinGothic URW',
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ),
@@ -113,7 +114,7 @@ class RunPausedPage extends ConsumerWidget {
 
               const SizedBox(height: 24),
 
-              // Estatísticas
+              // Métricas
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
@@ -149,6 +150,7 @@ class RunPausedPage extends ConsumerWidget {
                         ),
                         Expanded(
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
                                 _formatTime(trackingState.elapsedSeconds),
@@ -269,7 +271,7 @@ class RunPausedPage extends ConsumerWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Botão Stop
+                    // Botão Stop (cinza)
                     GestureDetector(
                       onTap: () async {
                         await trackingNotifier.finishRun();
@@ -280,9 +282,9 @@ class RunPausedPage extends ConsumerWidget {
                       child: Container(
                         width: 60,
                         height: 60,
-                        decoration: ShapeDecoration(
+                        decoration: const ShapeDecoration(
                           color: AppColors.neutral700,
-                          shape: const CircleBorder(),
+                          shape: CircleBorder(),
                         ),
                         child: const Center(
                           child: Icon(
@@ -294,7 +296,7 @@ class RunPausedPage extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(width: 24),
-                    // Botão Play (retomar)
+                    // Botão Play (verde - retomar)
                     GestureDetector(
                       onTap: () async {
                         await trackingNotifier.resumeRun();
@@ -305,9 +307,9 @@ class RunPausedPage extends ConsumerWidget {
                       child: Container(
                         width: 60,
                         height: 60,
-                        decoration: ShapeDecoration(
-                          color: const Color(0xFFCCF725), // Brand-lime-lime-500
-                          shape: const CircleBorder(),
+                        decoration: const ShapeDecoration(
+                          color: Color(0xFFCCF725), // Brand-lime-lime-500
+                          shape: CircleBorder(),
                         ),
                         child: const Center(
                           child: Icon(
@@ -363,15 +365,12 @@ class RunPausedPage extends ConsumerWidget {
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    decoration: ShapeDecoration(
-                      color: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        side: const BorderSide(
-                          width: 1,
-                          color: Color(0xFFCCF725), // Brand-lime-lime-500
-                        ),
-                        borderRadius: BorderRadius.circular(12),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color(0xFFCCF725), // Brand-lime-lime-500
+                        width: 1,
                       ),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Center(
                       child: Text(
@@ -398,7 +397,7 @@ class RunPausedPage extends ConsumerWidget {
                 child: const Text(
                   'Preciso de ajuda',
                   style: TextStyle(
-                    color: AppColors.neutral300,
+                    color: Colors.white,
                     fontSize: 14,
                     fontFamily: 'FranklinGothic URW',
                     fontWeight: FontWeight.w400,
